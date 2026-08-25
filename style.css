@@ -507,8 +507,8 @@ body.mobile .scroll-wrapper[_home] .scroller::before {
     linear-gradient(30deg, rgba(82,82,82,.45) 12%, transparent 12.5%, transparent 87%, rgba(82,82,82,.45) 87.5%),
     linear-gradient(150deg, rgba(20,20,20,.95) 12%, transparent 12.5%, transparent 87%, rgba(20,20,20,.95) 87.5%),
     linear-gradient(60deg, rgba(110,110,110,.18) 25%, transparent 25.5%, transparent 75%, rgba(110,110,110,.18) 75%) !important;
-  background-size: 48px 84px !important;
-  background-position: 0 0, 0 0, 24px 42px, 24px 42px, 0 0 !important;
+  background-size: 30px 52px !important;
+  background-position: 0 0, 0 0, 15px 26px, 15px 26px, 0 0 !important;
   border-top: 2px solid #ffd400 !important;
   border-bottom: 2px solid #ffd400 !important;
   box-shadow: inset 0 4px 5px #0008, inset 0 -4px 5px #0008 !important;
