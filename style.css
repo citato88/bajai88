@@ -503,7 +503,7 @@ body.mobile .scroll-wrapper[_home] .scroller::before {
   background-image: url("https://files.sitestatic.net/CustomFiles/20260503115629000000e8002ad6bf__BAJAI88__230x45.webp") !important;
   background-repeat: no-repeat !important;
   background-position: center !important;
-  background-size: 100% 100% !important;
+  background-size: cover !important;
   z-index: 0;
   pointer-events: none !important;
 }
