@@ -497,14 +497,18 @@ body.mobile .scroll-wrapper[_home] .scroller {
 }
 
 body.mobile .scroll-wrapper[_home] .scroller::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background-image: url("https://files.sitestatic.net/CustomFiles/20260503115629000000e8002ad6bf__BAJAI88__230x45.webp") !important;
-  background-repeat: no-repeat !important;
-  background-position: center !important;
-  background-size: cover !important;
-  z-index: 0;
+  content: "" !important;
+  position: absolute !important;
+  inset: 0 !important;
+  background:
+    linear-gradient(#ffd900 0 2px, transparent 2px calc(100% - 2px), #ffd900 calc(100% - 2px)),
+    linear-gradient(45deg, #181818 25%, transparent 25% 75%, #181818 75%),
+    linear-gradient(-45deg, #181818 25%, transparent 25% 75%, #181818 75%),
+    #101010 !important;
+  background-size: 100% 100%, 12px 12px, 12px 12px !important;
+  background-position: center, 0 0, 6px 6px !important;
+  box-shadow: inset 0 5px 8px #0008, inset 0 -5px 8px #0008 !important;
+  z-index: 0 !important;
   pointer-events: none !important;
 }
 
