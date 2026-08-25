@@ -501,18 +501,14 @@ body.mobile .scroll-wrapper[_home] .scroller::before {
   position: absolute !important;
   inset: 0 !important;
 
-  background-color: #090909 !important;
-  background-image:
+  background:
     conic-gradient(
       from 45deg at 50% 50%,
-      #181818 0 25%,
-      #252525 25% 50%,
-      #0d0d0d 50% 75%,
-      #1e1e1e 75% 100%
-    ) !important;
-
-  background-size: 54px 54px !important;
-  background-repeat: repeat !important;
+      #121314 0 25%,
+      #202224 25% 50%,
+      #090a0b 50% 75%,
+      #181a1c 75% 100%
+    ) 0 0 / 48px 48px repeat !important;
 
   border-top: 2px solid #ffd400 !important;
   border-bottom: 2px solid #ffd400 !important;
