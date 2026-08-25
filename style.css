@@ -500,49 +500,31 @@ body.mobile .scroll-wrapper[_home] .scroller::before {
   content: "" !important;
   position: absolute !important;
   inset: 0 !important;
-
   background:
-    /* notch atas */
-    linear-gradient(45deg, transparent 48%, #ffd800 50% 62%, transparent 64%)
-      32% 0 / 8px 4px no-repeat,
-    linear-gradient(-45deg, transparent 48%, #ffd800 50% 62%, transparent 64%)
-      68% 0 / 8px 4px no-repeat,
-
-    /* notch bawah */
-    linear-gradient(135deg, transparent 48%, #ffd800 50% 62%, transparent 64%)
-      32% 100% / 8px 4px no-repeat,
-    linear-gradient(-135deg, transparent 48%, #ffd800 50% 62%, transparent 64%)
-      68% 100% / 8px 4px no-repeat,
-
-    /* garis gold */
-    linear-gradient(#ffd800, #ffd800) top / 100% 2px no-repeat,
-    linear-gradient(#ffd800, #ffd800) bottom / 100% 2px no-repeat,
-
-    /* tekstur segitiga samar */
+    conic-gradient(from 135deg at 50% 0, transparent 0 43%, #ffd400 44% 48%, #090909 49% 51%, #ffd400 52% 56%, transparent 57%) 33% 0 / 14px 6px no-repeat,
+    conic-gradient(from 135deg at 50% 0, transparent 0 43%, #ffd400 44% 48%, #090909 49% 51%, #ffd400 52% 56%, transparent 57%) 67% 0 / 14px 6px no-repeat,
+    conic-gradient(from -45deg at 50% 100%, transparent 0 43%, #ffd400 44% 48%, #090909 49% 51%, #ffd400 52% 56%, transparent 57%) 33% 100% / 14px 6px no-repeat,
+    conic-gradient(from -45deg at 50% 100%, transparent 0 43%, #ffd400 44% 48%, #090909 49% 51%, #ffd400 52% 56%, transparent 57%) 67% 100% / 14px 6px no-repeat,
+    linear-gradient(#ffd400, #ffd400) top / 100% 2px no-repeat,
+    linear-gradient(#ffd400, #ffd400) bottom / 100% 2px no-repeat,
     conic-gradient(
-      from 30deg at 25% 25%,
-      #161616 0 60deg,
-      #1c1c1c 60deg 120deg,
-      #121212 120deg 180deg,
-      #191919 180deg 240deg,
-      #101010 240deg 300deg,
-      #181818 300deg
-    ) 0 0 / 24px 18px,
-
-    /* shading gelap */
-    linear-gradient(
-      to bottom,
-      #090909 0%,
-      #151515 25%,
-      #181818 50%,
-      #111 75%,
-      #080808 100%
-    ) !important;
-
+      from 45deg at 50% 50%,
+      #111 0 25%,
+      #1b1b1b 0 50%,
+      #141414 0 75%,
+      #202020 0
+    ) 0 0 / 28px 22px,
+    conic-gradient(
+      from 225deg at 50% 50%,
+      transparent 0 25%,
+      #151515 0 50%,
+      transparent 0 75%,
+      #0e0e0e 0
+    ) 14px 11px / 28px 22px,
+    linear-gradient(to bottom, #080808, #181818 45%, #121212 60%, #070707) !important;
   box-shadow:
-    inset 0 5px 7px #0008,
-    inset 0 -5px 7px #0008 !important;
-
+    inset 0 5px 7px #000b,
+    inset 0 -5px 7px #000b !important;
   z-index: 0 !important;
   pointer-events: none !important;
 }
