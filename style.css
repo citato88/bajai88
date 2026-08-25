@@ -474,7 +474,14 @@ body.desktop .main.nav-wrapper .row {
 }
 
 .desktop .col-md-8 {
-    background: #000000b4 !important;
+  background:
+    conic-gradient(
+      from 45deg at 50% 50%,
+      #121314 0 25%,
+      #0d0e0f 25% 50%,
+      #191a1b 50% 75%,
+      #222324 75% 100%
+    ) 0 0 / 28px 24px repeat !important;
 }
 
 /* =========================
