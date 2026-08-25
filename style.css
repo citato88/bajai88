@@ -502,12 +502,24 @@ body.mobile .scroll-wrapper[_home] .scroller::before {
   inset: 0 !important;
   background:
     linear-gradient(#ffd900 0 2px, transparent 2px calc(100% - 2px), #ffd900 calc(100% - 2px)),
-    linear-gradient(45deg, #181818 25%, transparent 25% 75%, #181818 75%),
-    linear-gradient(-45deg, #181818 25%, transparent 25% 75%, #181818 75%),
+    linear-gradient(30deg, #181818 12%, transparent 12.5% 87%, #181818 87.5%),
+    linear-gradient(150deg, #202020 12%, transparent 12.5% 87%, #202020 87.5%),
+    linear-gradient(30deg, #151515 12%, transparent 12.5% 87%, #151515 87.5%),
+    linear-gradient(150deg, #1b1b1b 12%, transparent 12.5% 87%, #1b1b1b 87.5%),
     #101010 !important;
-  background-size: 100% 100%, 12px 12px, 12px 12px !important;
-  background-position: center, 0 0, 6px 6px !important;
-  box-shadow: inset 0 5px 8px #0008, inset 0 -5px 8px #0008 !important;
+  background-size:
+    100% 100%,
+    18px 30px,
+    18px 30px,
+    18px 30px,
+    18px 30px !important;
+  background-position:
+    0 0,
+    0 0,
+    0 0,
+    9px 15px,
+    9px 15px !important;
+  box-shadow: inset 0 5px 8px #0009, inset 0 -5px 8px #0009 !important;
   z-index: 0 !important;
   pointer-events: none !important;
 }
