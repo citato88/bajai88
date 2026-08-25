@@ -500,17 +500,49 @@ body.mobile .scroll-wrapper[_home] .scroller::before {
   content: "" !important;
   position: absolute !important;
   inset: 0 !important;
+
   background:
-    linear-gradient(135deg, #1d1d1d 25%, transparent 25%) 0 0/18px 18px,
-    linear-gradient(225deg, #151515 25%, transparent 25%) 0 0/18px 18px,
-    linear-gradient(315deg, #202020 25%, transparent 25%) 9px 9px/18px 18px,
-    linear-gradient(45deg, #121212 25%, transparent 25%) 9px 9px/18px 18px,
-    linear-gradient(to bottom, #101010, #181818 48%, #0b0b0b) !important;
-  border-top: 2px solid #ffd900 !important;
-  border-bottom: 2px solid #ffd900 !important;
+    /* notch atas */
+    linear-gradient(45deg, transparent 48%, #ffd800 50% 62%, transparent 64%)
+      32% 0 / 8px 4px no-repeat,
+    linear-gradient(-45deg, transparent 48%, #ffd800 50% 62%, transparent 64%)
+      68% 0 / 8px 4px no-repeat,
+
+    /* notch bawah */
+    linear-gradient(135deg, transparent 48%, #ffd800 50% 62%, transparent 64%)
+      32% 100% / 8px 4px no-repeat,
+    linear-gradient(-135deg, transparent 48%, #ffd800 50% 62%, transparent 64%)
+      68% 100% / 8px 4px no-repeat,
+
+    /* garis gold */
+    linear-gradient(#ffd800, #ffd800) top / 100% 2px no-repeat,
+    linear-gradient(#ffd800, #ffd800) bottom / 100% 2px no-repeat,
+
+    /* tekstur segitiga samar */
+    conic-gradient(
+      from 30deg at 25% 25%,
+      #161616 0 60deg,
+      #1c1c1c 60deg 120deg,
+      #121212 120deg 180deg,
+      #191919 180deg 240deg,
+      #101010 240deg 300deg,
+      #181818 300deg
+    ) 0 0 / 24px 18px,
+
+    /* shading gelap */
+    linear-gradient(
+      to bottom,
+      #090909 0%,
+      #151515 25%,
+      #181818 50%,
+      #111 75%,
+      #080808 100%
+    ) !important;
+
   box-shadow:
-    inset 0 5px 7px #000a,
-    inset 0 -5px 7px #000a !important;
+    inset 0 5px 7px #0008,
+    inset 0 -5px 7px #0008 !important;
+
   z-index: 0 !important;
   pointer-events: none !important;
 }
