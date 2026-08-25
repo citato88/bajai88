@@ -502,13 +502,20 @@ body.mobile .scroll-wrapper[_home] .scroller::before {
   inset: 0 !important;
   background-color: #090909 !important;
   background-image:
-    linear-gradient(30deg, rgba(45,45,45,.55) 12%, transparent 12.5%, transparent 87%, rgba(45,45,45,.55) 87.5%),
-    linear-gradient(150deg, rgba(22,22,22,.9) 12%, transparent 12.5%, transparent 87%, rgba(22,22,22,.9) 87.5%),
-    linear-gradient(30deg, rgba(58,58,58,.35) 12%, transparent 12.5%, transparent 87%, rgba(58,58,58,.35) 87.5%),
-    linear-gradient(150deg, rgba(16,16,16,.95) 12%, transparent 12.5%, transparent 87%, rgba(16,16,16,.95) 87.5%),
-    linear-gradient(60deg, rgba(36,36,36,.3) 25%, transparent 25.5%, transparent 75%, rgba(36,36,36,.3) 75%) !important;
-  background-size: 72px 84px !important;
-  background-position: 0 0, 0 0, 36px 42px, 36px 42px, 0 0 !important;
+    linear-gradient(30deg, #1f1f1f 12%, transparent 12.5%, transparent 87%, #1f1f1f 87.5%),
+    linear-gradient(150deg, #151515 12%, transparent 12.5%, transparent 87%, #151515 87.5%),
+    linear-gradient(30deg, #292929 12%, transparent 12.5%, transparent 87%, #292929 87.5%),
+    linear-gradient(150deg, #101010 12%, transparent 12.5%, transparent 87%, #101010 87.5%),
+    linear-gradient(60deg, #1b1b1b 25%, transparent 25.5%, transparent 75%, #1b1b1b 75%) !important;
+
+  background-size: 54px 72px !important;
+  background-position:
+    0 0,
+    0 0,
+    27px 36px,
+    27px 36px,
+    0 0 !important;
+
   border-top: 2px solid #ffd400 !important;
   border-bottom: 2px solid #ffd400 !important;
   z-index: 0 !important;
