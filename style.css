@@ -504,10 +504,10 @@ body.mobile .scroll-wrapper[_home] .scroller::before {
   background:
     conic-gradient(
       from 45deg at 50% 50%,
-      #1a1b1c 0 25%,
-      #282a2c 25% 50%,
-      #0d0e0f 50% 75%,
-      #151617 75% 100%
+      #171819 0 25%,
+      #202122 25% 50%,
+      #18191a 50% 75%,
+      #111213 75% 100%
     ) 0 0 / 40px 24px repeat !important;
 
   border-top: 2px solid #ffd400 !important;
