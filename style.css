@@ -500,24 +500,28 @@ body.mobile .scroll-wrapper[_home] .scroller::before {
   content: "" !important;
   position: absolute !important;
   inset: 0 !important;
-  background-color: #090909 !important;
-  background-image:
-    linear-gradient(30deg, #1f1f1f 12%, transparent 12.5%, transparent 87%, #1f1f1f 87.5%),
-    linear-gradient(150deg, #151515 12%, transparent 12.5%, transparent 87%, #151515 87.5%),
-    linear-gradient(30deg, #292929 12%, transparent 12.5%, transparent 87%, #292929 87.5%),
-    linear-gradient(150deg, #101010 12%, transparent 12.5%, transparent 87%, #101010 87.5%),
-    linear-gradient(60deg, #1b1b1b 25%, transparent 25.5%, transparent 75%, #1b1b1b 75%) !important;
+  background-color: #0b0b0b !important;
 
-  background-size: 54px 72px !important;
-  background-position:
-    0 0,
-    0 0,
-    27px 36px,
-    27px 36px,
-    0 0 !important;
+  background-image:
+    linear-gradient(30deg,
+      transparent 0 24%,
+      #242424 24.5% 49.5%,
+      #151515 50% 74.5%,
+      transparent 75% 100%
+    ),
+    linear-gradient(150deg,
+      transparent 0 24%,
+      #1a1a1a 24.5% 49.5%,
+      #2a2a2a 50% 74.5%,
+      transparent 75% 100%
+    ) !important;
+
+  background-size: 58px 58px !important;
+  background-position: 0 0, 29px 0 !important;
 
   border-top: 2px solid #ffd400 !important;
   border-bottom: 2px solid #ffd400 !important;
+
   z-index: 0 !important;
   pointer-events: none !important;
 }
