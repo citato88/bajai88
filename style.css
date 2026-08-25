@@ -502,13 +502,13 @@ body.mobile .scroll-wrapper[_home] .scroller::before {
   inset: 0 !important;
   background-color: #080808 !important;
   background-image:
-    linear-gradient(30deg, rgba(65,65,65,.75) 12%, transparent 12.5%, transparent 87%, rgba(65,65,65,.75) 87.5%),
-    linear-gradient(150deg, rgba(32,32,32,.9) 12%, transparent 12.5%, transparent 87%, rgba(32,32,32,.9) 87.5%),
-    linear-gradient(30deg, rgba(82,82,82,.45) 12%, transparent 12.5%, transparent 87%, rgba(82,82,82,.45) 87.5%),
-    linear-gradient(150deg, rgba(20,20,20,.95) 12%, transparent 12.5%, transparent 87%, rgba(20,20,20,.95) 87.5%),
-    linear-gradient(60deg, rgba(110,110,110,.18) 25%, transparent 25.5%, transparent 75%, rgba(110,110,110,.18) 75%) !important;
-  background-size: 30px 52px !important;
-  background-position: 0 0, 0 0, 15px 26px, 15px 26px, 0 0 !important;
+    linear-gradient(30deg, rgba(65,65,65,.65) 12%, transparent 12.5%, transparent 87%, rgba(65,65,65,.65) 87.5%),
+    linear-gradient(150deg, rgba(32,32,32,.85) 12%, transparent 12.5%, transparent 87%, rgba(32,32,32,.85) 87.5%),
+    linear-gradient(30deg, rgba(82,82,82,.4) 12%, transparent 12.5%, transparent 87%, rgba(82,82,82,.4) 87.5%),
+    linear-gradient(150deg, rgba(20,20,20,.9) 12%, transparent 12.5%, transparent 87%, rgba(20,20,20,.9) 87.5%),
+    linear-gradient(60deg, rgba(110,110,110,.15) 25%, transparent 25.5%, transparent 75%, rgba(110,110,110,.15) 75%) !important;
+  background-size: 44px 54px !important;
+  background-position: 0 0, 0 0, 22px 27px, 22px 27px, 0 0 !important;
   border-top: 2px solid #ffd400 !important;
   border-bottom: 2px solid #ffd400 !important;
   box-shadow: inset 0 4px 5px #0008, inset 0 -4px 5px #0008 !important;
