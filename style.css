@@ -612,7 +612,7 @@ body.mobile .scroll-wrapper[_home] .col {
 .container.sub-games,
 .container.promo-view,
 .container.pt-4,
-.memo_page .memo_tab .tab-content {
+.memo_page .tab-content {
   background: #000000b4 !important;
   box-shadow:
     -2px 0 2px rgba(0,0,0,.75),
@@ -1069,6 +1069,19 @@ input.btn-primary::before {
     ) 0 0 / 28px 24px repeat !important;
    border-top: 2px solid #ffd400 !important;
    border-bottom: 2px solid #ffd400 !important;
+}
+
+#livechathover_menu {
+    background:
+    conic-gradient(
+      from 45deg at 50% 50%,
+      #121314 0 25%,
+      #0d0e0f 25% 50%,
+      #191a1b 50% 75%,
+      #222324 75% 100%
+    ) 0 0 / 24px 24px repeat !important;
+   border-top: 2px solid #ffd400 !important;
+   border-left: 2px solid #ffd400 !important;
 }
 
 .profile-head .container,
