@@ -650,39 +650,29 @@ body.mobile .content.my01 > .container {
 }
 
 .apk-download-btn-via-mobile {
-  display: inline-block;
   position: relative;
-  background: linear-gradient(180deg, #ffe600 0%, #ffc400 100%) !important;
+  background: #ffd400 !important;
   color: #111 !important;
-  font-size: 12px;
-  font-weight: 900;
   padding: 8px 20px;
   border-radius: 20px;
-  border: none;
-  text-align: center;
-  z-index: 1;
 }
 
+.apk-download-btn-via-mobile::before,
 .apk-download-btn-via-mobile::after {
   content: "";
   position: absolute;
   inset: 0;
   border: 2px solid #ffd400;
   border-radius: inherit;
-  z-index: -1;
-  animation: downloadBeat 1.2s ease-out infinite;
+  animation: ring 1.2s infinite;
 }
 
-@keyframes downloadBeat {
-  0% {
-    transform: scale(1);
-    opacity: .9;
-  }
-  70% {
-    transform: scale(1.35);
-    opacity: 0;
-  }
-  100% {
+.apk-download-btn-via-mobile::after {
+  animation-delay: .4s;
+}
+
+@keyframes ring {
+  to {
     transform: scale(1.35);
     opacity: 0;
   }
