@@ -620,6 +620,19 @@ body.mobile .scroll-wrapper[_home] .col {
      0 4px 2px rgba(0,0,0,.75) !important;
 }
 
+.memo_page {
+  background:
+    conic-gradient(
+      from 45deg at 50% 50%,
+      #121314 0 25%,
+      #0d0e0f 25% 50%,
+      #191a1b 50% 75%,
+      #222324 75% 100%
+    ) 0 0 / 28px 24px repeat !important;
+   border-top: 2px solid #ffd400 !important;
+   border-bottom: 2px solid #ffd400 !important;
+}
+
 body.mobile .content.my01 > .container {
   background: #00000088 !important;
 }
