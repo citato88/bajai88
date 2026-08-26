@@ -1045,6 +1045,17 @@ input.btn-primary::before {
   background-color: #1d0622 !important;
 }
 
+.list-inline {
+  background:
+    conic-gradient(
+      from 45deg at 50% 50%,
+      #121314 0 25%,
+      #0d0e0f 25% 50%,
+      #191a1b 50% 75%,
+      #222324 75% 100%
+    ) 0 0 / 28px 24px repeat !important;
+}
+
 .profile-head .container,
 .acc.container-wrapper .container-box .title,
 .profile-head .container-box .title {
