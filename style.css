@@ -1003,7 +1003,7 @@ input.btn-primary::before {
 
 #fundshover_menu {
   display: flex !important;
-  border: 1px solid #fff !important;
+  border: 1px solid #ffd400 !important;
   border-radius: 6px !important;
   background: linear-gradient(#1d0622, #3b0e1d) !important;
   padding: 0 !important;
