@@ -496,8 +496,7 @@ body.mobile .top-bar .inner-header,
       #191a1b 50% 75%,
       #222324 75% 100%
     ) 0 0 / 28px 24px repeat !important;
-  box-shadow: none !important;
-  border-top: 2px solid #ffd400 !important;
+  border-bottom: 2px solid #ffd400 !important;
   opacity: 100%;
 }
 
