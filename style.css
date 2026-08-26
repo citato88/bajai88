@@ -605,35 +605,6 @@ body.mobile .scroll-wrapper[_home] .col {
   box-shadow: 0px 0px 4px 0px rgba(255, 199, 59, 0.74) !important;
 }
 
-.apk-down-bar {
-    background: #00000088 !important;
-}
-
-.apk-download-btn-via-mobile {
-  display: inline-block;
-  background: linear-gradient(180deg, #ffe600 0%, #ffc400 100%) !important;
-  color: #111 !important;
-  font-size: 12px;
-  font-weight: 900;
-  padding: 8px 20px;
-  border-radius: 20px;
-  border: 1px solid #fff06a;
-  text-align: center;
-  box-shadow: 0 0 8px rgba(255, 210, 0, .65);
-  animation: apkPulse 1.2s ease-in-out infinite;
-}
-
-@keyframes apkPulse {
-  0%, 100% {
-    transform: scale(1);
-    box-shadow: 0 0 5px rgba(255, 210, 0, .45);
-  }
-  50% {
-    transform: scale(1.08);
-    box-shadow: 0 0 14px rgba(255, 210, 0, .9);
-  }
-}
-
 .container.sub-games,
 .container.promo-view,
 .container.pt-4,
@@ -669,6 +640,52 @@ body.mobile .content.my01 > .container {
 
 .black-bg {
     background: transparent !important;
+}
+
+/* =========================
+   APK MOBILE
+========================= */
+.apk-down-bar {
+    background: #00000088 !important;
+}
+
+.apk-download-btn-via-mobile {
+  display: inline-block;
+  position: relative;
+  background: linear-gradient(180deg, #ffe600 0%, #ffc400 100%) !important;
+  color: #111 !important;
+  font-size: 12px;
+  font-weight: 900;
+  padding: 8px 20px;
+  border-radius: 20px;
+  border: none;
+  text-align: center;
+  z-index: 1;
+}
+
+.apk-download-btn-via-mobile::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border: 2px solid #ffd400;
+  border-radius: inherit;
+  z-index: -1;
+  animation: downloadBeat 1.2s ease-out infinite;
+}
+
+@keyframes downloadBeat {
+  0% {
+    transform: scale(1);
+    opacity: .9;
+  }
+  70% {
+    transform: scale(1.35);
+    opacity: 0;
+  }
+  100% {
+    transform: scale(1.35);
+    opacity: 0;
+  }
 }
 
 /* =========================
