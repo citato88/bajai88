@@ -417,10 +417,10 @@ body.desktop .main.nav-wrapper::before {
   background:
   conic-gradient(
     from 45deg at 50% 50%,
-    #2b0926 0 25%,
-    #160514 25% 50%,
-    #3f0c36 50% 75%,
-    #541244 75% 100%
+    #21091f 0 25%,
+    #160616 25% 50%,
+    #2d0b28 50% 75%,
+    #3a102f 75% 100%
   ) 0 0 / 28px 20px repeat !important;
   border-top: 2px solid #ffd400 !important;
   border-bottom: 2px solid #ffd400 !important;
