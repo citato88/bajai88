@@ -651,7 +651,7 @@ body.mobile .content.my01 > .container {
 
 .apk-download-btn-via-mobile {
   position: relative;
-  background: #ffd400 !important;
+  background: linear-gradient(#ffe94d, #ffc400) !important;
   color: #111 !important;
   padding: 8px 20px;
   border-radius: 20px;
