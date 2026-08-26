@@ -1,12 +1,9 @@
-/*
-==========================
-  SERVER SELECTOR SYSTEM
-==========================
-*/
 (function () {
   "use strict";
 
   const BRAND_NAME = "BAJAI88";
+  const MOBILE_BREAKPOINT = 768;
+  const STORAGE_KEY = "selectedServerEvent";
 
   const ALLOWED_SERVERS = [
     { value: "indonesia", label: "Server Indonesia", min: 40.20, max: 99.80 },
@@ -31,109 +28,216 @@
     ".jackpot",
     ".main-menu-outer-container"
   ];
-  const STORAGE_KEY = "selectedServerEvent";
-  const MOBILE_BREAKPOINT = 768;
-  const INSERT_POSITION = "afterend";
+
+  let isConnecting = false;
+  let connectionToken = 0;
+  const currentPercents = {};
 
   function injectStyle() {
-    if (document.getElementById("server-selector-style")) return;
+    if (document.getElementById("server-selector-style-v2")) return;
 
     const style = document.createElement("style");
-    style.id = "server-selector-style";
+    style.id = "server-selector-style-v2";
+
     style.textContent = `
       .server-selector-ui {
         width: calc(100% - 20px);
-        max-width: 100%;
-        margin: 12px auto 14px;
-        padding: 14px;
-        box-sizing: border-box;
+        margin: 14px auto;
         position: relative;
-        overflow: visible;
         z-index: 99;
         font-family: Montserrat, Arial, sans-serif;
-        border-radius: 12px;
+        filter: drop-shadow(0 10px 18px rgba(0,0,0,.55));
+      }
+
+      .server-panel {
+        position: relative;
+        padding: 14px;
+        overflow: visible;
+        color: #f7dc82;
+
+        clip-path:
+          polygon(
+            14px 0,
+            calc(100% - 14px) 0,
+            100% 14px,
+            100% calc(100% - 14px),
+            calc(100% - 14px) 100%,
+            14px 100%,
+            0 calc(100% - 14px),
+            0 14px
+          );
+
+        border: 1px solid #a96f1d;
+
         background:
-          radial-gradient(circle at top left, rgba(255, 196, 0, .10), transparent 30%),
-          radial-gradient(circle at bottom right, rgba(214, 0, 255, .12), transparent 34%),
-          linear-gradient(180deg, #120313 0%, #1b0624 45%, #09050f 100%);
-        border: 1px solid rgba(255, 199, 59, .70);
+          linear-gradient(
+            rgba(20,4,18,.92),
+            rgba(20,4,18,.92)
+          ),
+          conic-gradient(
+            from 45deg at 50% 50%,
+            #2b0826 0 25%,
+            #130410 25% 50%,
+            #3a0c32 50% 75%,
+            #21071e 75% 100%
+          ) 0 0 / 28px 24px repeat;
+
         box-shadow:
-          0 0 0 1px rgba(255, 213, 92, .10) inset,
-          0 0 16px rgba(214, 0, 255, .14),
-          0 8px 24px rgba(0,0,0,.42);
+          inset 0 0 0 1px rgba(255,215,73,.08),
+          inset 0 0 30px rgba(0,0,0,.68);
       }
 
-      .server-selector-ui::before {
-        display: none !important;
-      }
-
-      .server-selector-ui::after {
+      .server-panel::before {
         content: "";
         position: absolute;
-        left: 12px;
-        right: 12px;
         top: 0;
+        left: 26px;
+        right: 26px;
+        height: 2px;
+        background:
+          linear-gradient(
+            90deg,
+            transparent,
+            #c88a1e 20%,
+            #ffe45b 50%,
+            #c88a1e 80%,
+            transparent
+          );
+      }
+
+      .server-panel::after {
+        content: "";
+        position: absolute;
+        bottom: 0;
+        left: 26px;
+        right: 26px;
         height: 1px;
-        background: linear-gradient(90deg, transparent, rgba(255, 204, 68, .45), transparent);
-        pointer-events: none;
+        background:
+          linear-gradient(
+            90deg,
+            transparent,
+            #8b5918,
+            #d69b2b,
+            #8b5918,
+            transparent
+          );
       }
 
-      @keyframes serverSelectorShine {
-        to { transform: translateX(120%); }
-      }
-
-      .server-selector-head {
+      .server-header {
         display: flex;
         align-items: center;
         justify-content: space-between;
         gap: 10px;
-        margin-bottom: 12px;
-        position: relative;
-        z-index: 2;
+        margin: 4px 2px 12px;
       }
 
-      .server-selector-title {
-        color: #ffd54a;
-        font-size: 14px;
-        font-weight: 800;
-        line-height: 1.15;
+      .server-heading {
+        min-width: 0;
+      }
+
+      .server-mini-title {
+        margin-bottom: 3px;
+        color: #9f762f;
+        font-size: 8px;
+        font-weight: 900;
+        letter-spacing: 1.6px;
+      }
+
+      .server-main-title {
+        color: #ffe05b;
+        font-size: 16px;
+        line-height: 1;
+        font-weight: 900;
         letter-spacing: .4px;
         text-transform: uppercase;
-        text-shadow: 0 0 8px rgba(255, 195, 0, .24);
+        text-shadow: 0 0 8px rgba(255,202,28,.25);
       }
 
-      .server-selector-sub {
-        display: none;
+      .server-description {
+        margin-top: 5px;
+        color: #a88a62;
+        font-size: 9px;
+        font-weight: 600;
       }
 
-      .server-selector-badge {
-        position: relative;
+      .server-brand {
         flex: 0 0 auto;
-        width: auto;
-        padding: 6px 11px;
-        border-radius: 8px;
+        padding: 8px 11px;
+        min-width: 68px;
         text-align: center;
-        color: #ffd86a;
-        font-size: 11px;
-        font-weight: 800;
-        letter-spacing: .2px;
-        text-transform: uppercase;
-        white-space: nowrap;
-        background: linear-gradient(180deg, rgba(85, 10, 101, .92), rgba(43, 8, 50, .95));
-        border: 1px solid rgba(255, 194, 58, .42);
+
+        color: #211000;
+        font-size: 10px;
+        font-weight: 1000;
+        letter-spacing: .4px;
+
+        clip-path:
+          polygon(
+            7px 0,
+            100% 0,
+            100% calc(100% - 7px),
+            calc(100% - 7px) 100%,
+            0 100%,
+            0 7px
+          );
+
+        background:
+          linear-gradient(
+            180deg,
+            #fff07c,
+            #ffd238 50%,
+            #d88a10
+          );
+
         box-shadow:
-          0 0 10px rgba(214, 0, 255, .10),
-          0 0 0 1px rgba(255,255,255,.02) inset;
+          inset 0 1px rgba(255,255,255,.7);
       }
 
-      .server-selector-badge::before,
-      .server-selector-badge::after {
-        content: none;
+      .server-line {
+        height: 1px;
+        margin-bottom: 12px;
+        background:
+          linear-gradient(
+            90deg,
+            transparent,
+            #674317,
+            #c58b27,
+            #674317,
+            transparent
+          );
       }
 
-      .server-selector-field {
-        position: relative;
-        z-index: 20;
+      .server-field-title {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin: 0 2px 6px;
+      }
+
+      .server-field-title span:first-child {
+        color: #d7b76d;
+        font-size: 9px;
+        font-weight: 900;
+        letter-spacing: .9px;
+      }
+
+      .server-live {
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+
+        color: #9e835f;
+        font-size: 9px;
+        font-weight: 800;
+      }
+
+      .server-live::before {
+        content: "";
+        width: 6px;
+        height: 6px;
+        border-radius: 50%;
+        background: #ffd43a;
+        box-shadow: 0 0 7px rgba(255,212,58,.75);
       }
 
       .server-native-select {
@@ -142,53 +246,76 @@
 
       .server-custom-select {
         position: relative;
+        z-index: 50;
       }
 
       .server-custom-trigger {
         width: 100%;
-        min-height: 46px;
-        padding: 0 42px 0 14px;
-        border-radius: 14px;
-        border: 1px solid rgba(255, 197, 59, .42);
-        cursor: pointer;
-        transition: .25s ease;
-        color: #ffe082;
-        font-size: 13px;
-        font-weight: 800;
+        min-height: 50px;
+        padding: 0 46px 0 14px;
+
         display: flex;
         align-items: center;
+
         position: relative;
+        cursor: pointer;
         user-select: none;
-        background: linear-gradient(180deg, rgba(41, 8, 46, .96), rgba(20, 7, 25, .98));
+
+        color: #ffe47c;
+        font-size: 13px;
+        font-weight: 900;
+
+        border: 1px solid #93601b;
+
+        clip-path:
+          polygon(
+            10px 0,
+            100% 0,
+            100% calc(100% - 10px),
+            calc(100% - 10px) 100%,
+            0 100%,
+            0 10px
+          );
+
+        background:
+          linear-gradient(
+            90deg,
+            rgba(255,205,55,.06),
+            transparent 32%
+          ),
+          linear-gradient(
+            180deg,
+            #31092c,
+            #160413
+          );
+
         box-shadow:
-          0 0 0 1px rgba(255,255,255,.02) inset,
-          0 6px 14px rgba(0,0,0,.20);
+          inset 0 1px rgba(255,255,255,.05),
+          inset 0 -8px 14px rgba(0,0,0,.28);
+
+        transition: .18s ease;
       }
 
       .server-custom-trigger:hover {
-        transform: translateY(-1px);
-        border-color: rgba(255, 214, 87, .76);
-        box-shadow:
-          0 0 0 3px rgba(255, 184, 28, .08),
-          0 0 12px rgba(214, 0, 255, .14),
-          0 6px 14px rgba(0,0,0,.22);
+        border-color: #d29a2d;
       }
 
       .server-custom-select.open .server-custom-trigger {
-        border-color: rgba(255, 214, 87, .90);
+        border-color: #ffd43a;
+
         box-shadow:
-          0 0 0 3px rgba(255, 184, 28, .12),
-          0 0 12px rgba(214, 0, 255, .16);
+          inset 0 0 0 1px rgba(255,213,61,.08),
+          0 0 0 2px rgba(255,210,50,.08);
       }
 
       .server-custom-label {
+        width: 100%;
+        min-width: 0;
+
         display: flex;
         align-items: center;
         justify-content: space-between;
         gap: 10px;
-        width: 100%;
-        min-width: 0;
-        padding-right: 8px;
       }
 
       .selected-server-name {
@@ -199,54 +326,72 @@
 
       .selected-server-meta {
         flex: 0 0 auto;
+
         display: inline-flex;
         align-items: center;
         gap: 4px;
-        white-space: nowrap;
+
         font-size: 11px;
-        line-height: 1;
+        white-space: nowrap;
       }
 
       .server-selector-arrow {
         position: absolute;
-        right: 14px;
+        right: 16px;
         top: 50%;
-        transform: translateY(-50%);
-        width: 0;
-        height: 0;
-        pointer-events: none;
-        border-left: 5px solid transparent;
-        border-right: 5px solid transparent;
-        border-top: 8px solid #ffd04d;
-        filter: drop-shadow(0 0 8px rgba(255, 187, 0, .24));
-        transition: .25s ease;
+
+        width: 10px;
+        height: 10px;
+
+        border-right: 2px solid #ffd43a;
+        border-bottom: 2px solid #ffd43a;
+
+        transform:
+          translateY(-70%)
+          rotate(45deg);
+
+        transition: .2s;
       }
 
       .server-custom-select.open .server-selector-arrow {
-        transform: translateY(-50%) rotate(180deg);
+        transform:
+          translateY(-25%)
+          rotate(225deg);
       }
 
       .server-custom-menu {
         position: absolute;
-        top: calc(100% + 8px);
+        top: calc(100% + 7px);
         left: 0;
         right: 0;
-        padding: 8px;
-        border-radius: 14px;
-        background: linear-gradient(180deg, rgba(25, 8, 33, .98), rgba(10, 5, 16, .98));
-        border: 1px solid rgba(255, 191, 42, .28);
-        box-shadow:
-          0 16px 34px rgba(0,0,0,.42),
-          0 0 16px rgba(214, 0, 255, .12),
-          inset 0 1px 0 rgba(255,255,255,.04);
-        backdrop-filter: blur(10px);
-        -webkit-backdrop-filter: blur(10px);
-        opacity: 0;
-        visibility: hidden;
-        transform: translateY(8px);
-        transition: .22s ease;
+
+        padding: 6px;
         max-height: 260px;
         overflow-y: auto;
+
+        border: 1px solid #77501c;
+
+        background:
+          linear-gradient(
+            rgba(16,3,14,.96),
+            rgba(16,3,14,.96)
+          ),
+          conic-gradient(
+            from 45deg,
+            #2b0826 0 25%,
+            #130410 25% 50%,
+            #3a0c32 50% 75%,
+            #21071e 75%
+          ) 0 0 / 28px 24px;
+
+        box-shadow:
+          0 16px 32px rgba(0,0,0,.72);
+
+        opacity: 0;
+        visibility: hidden;
+
+        transform: translateY(8px);
+        transition: .18s ease;
       }
 
       .server-custom-select.open .server-custom-menu {
@@ -256,63 +401,116 @@
       }
 
       .server-custom-menu::-webkit-scrollbar {
-        width: 6px;
+        width: 4px;
       }
 
       .server-custom-menu::-webkit-scrollbar-thumb {
-        background: rgba(255, 214, 51, 0.35);
-        border-radius: 99px;
+        background: #97661f;
       }
 
       .server-custom-option {
-        position: relative;
-        min-height: 44px;
-        padding: 11px 12px;
-        border-radius: 12px;
-        display: flex;
+        min-height: 42px;
+        padding: 9px 10px;
+        margin-bottom: 4px;
+
+        display: grid;
+        grid-template-columns: minmax(0,1fr) auto;
         align-items: center;
-        justify-content: space-between;
-        gap: 10px;
-        color: #f5d98d;
-        font-size: 12px;
+        gap: 8px;
+
+        color: #ddc07c;
+        font-size: 11.5px;
         font-weight: 800;
-        letter-spacing: .2px;
+
         cursor: pointer;
-        transition: .18s ease;
-        background: transparent;
-        border: 1px solid transparent;
+
+        border-left: 2px solid transparent;
+
+        background:
+          linear-gradient(
+            90deg,
+            rgba(255,255,255,.025),
+            transparent
+          );
+
+        transition: .15s;
       }
 
-      .server-custom-option:hover {
-        color: #ffe45c;
-        background: linear-gradient(180deg, rgba(36, 8, 45, .95), rgba(17, 7, 23, .98));
-        border-color: rgba(255, 189, 42, .22);
-        box-shadow:
-          inset 0 1px 0 rgba(255,255,255,.03),
-          0 0 12px rgba(214, 0, 255, .10);
+      .server-custom-option:last-child {
+        margin-bottom: 0;
       }
 
+      .server-custom-option:hover,
       .server-custom-option.selected {
-        color: #ffd54a;
-        background: linear-gradient(180deg, rgba(41, 8, 46, .96), rgba(20, 7, 25, .98));
-        border: 1px solid rgba(255, 197, 59, .42);
-        box-shadow:
-          0 0 10px rgba(214, 0, 255, .10),
-          inset 0 1px 0 rgba(255,255,255,0.04);
+        color: #ffe66d;
+        border-left-color: #ffd43a;
+
+        background:
+          linear-gradient(
+            90deg,
+            rgba(255,200,35,.13),
+            rgba(68,10,58,.42) 60%,
+            transparent
+          );
+      }
+
+      .server-option-name {
+        min-width: 0;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+
+      .server-option-percent {
+        margin-left: 8px;
+        font-size: 11px;
+        font-weight: 1000;
+      }
+
+      .server-signal {
+        display: inline-flex;
+        align-items: flex-end;
+        gap: 2px;
+
+        height: 11px;
+        margin-right: 3px;
+      }
+
+      .server-signal .signal-bar {
+        width: 2px;
+        background: currentColor;
+        opacity: .22;
+      }
+
+      .server-signal .signal-bar:nth-child(1) {
+        height: 3px;
+      }
+
+      .server-signal .signal-bar:nth-child(2) {
+        height: 5px;
+      }
+
+      .server-signal .signal-bar:nth-child(3) {
+        height: 8px;
+      }
+
+      .server-signal .signal-bar:nth-child(4) {
+        height: 11px;
+      }
+
+      .server-signal .signal-bar.active {
+        opacity: 1;
       }
 
       .server-terminal-inline {
         margin-top: 10px;
-        padding: 10px 12px;
+        padding: 10px 11px;
+
         display: none;
-        position: relative;
-        z-index: 2;
-        border-radius: 12px;
-        background: linear-gradient(180deg, rgba(25, 8, 33, .96), rgba(10, 5, 16, .98));
-        border: 1px solid rgba(255, 191, 42, .20);
-        box-shadow:
-          0 0 0 1px rgba(255,255,255,.02) inset,
-          0 6px 14px rgba(0,0,0,.18);
+
+        border-left: 2px solid #d49727;
+
+        background: #0b0209;
       }
 
       .server-terminal-inline.show {
@@ -320,115 +518,71 @@
       }
 
       .server-terminal-inline-box {
-        color: #ffe45c;
-        font-family: Consolas, Monaco, monospace;
-        font-size: 12px;
-        line-height: 1.7;
+        color: #efca55;
+        font: 11px/1.65 Consolas, Monaco, monospace;
         white-space: pre-wrap;
-        text-shadow: 0 0 8px rgba(255, 188, 0, .14);
       }
 
       .server-status {
         margin-top: 12px;
-        padding: 12px;
-        border-radius: 14px;
-        display: flex;
+        padding: 9px 10px;
+
+        display: grid;
+        grid-template-columns: auto 1fr;
         align-items: center;
-        gap: 10px;
-        position: relative;
-        z-index: 2;
-        background: linear-gradient(180deg, rgba(36, 8, 45, .95), rgba(17, 7, 23, .98));
-        border: 1px solid rgba(255, 189, 42, .22);
-        box-shadow: 0 0 0 1px rgba(255,255,255,.02) inset;
+        gap: 9px;
+
+        border: 1px solid #624017;
+
+        background:
+          linear-gradient(
+            90deg,
+            #150411,
+            #280823 55%,
+            #150411
+          );
       }
 
       .server-dot {
-        width: 10px;
-        height: 10px;
+        width: 8px;
+        height: 8px;
         border-radius: 50%;
-        flex: 0 0 10px;
-        background: #8d7d72;
-        transition: .25s ease;
+
+        background: #766c62;
       }
 
       .server-dot.active {
-        background: #ffd54a;
-        box-shadow:
-          0 0 8px rgba(255, 208, 74, .75),
-          0 0 14px rgba(255, 176, 0, .28);
+        background: #ffd43a;
+        box-shadow: 0 0 8px rgba(255,212,58,.8);
       }
 
       .server-dot.pending {
         background: #ff4df0;
-        box-shadow:
-          0 0 8px rgba(255, 77, 240, .55),
-          0 0 14px rgba(255, 77, 240, .20);
-        animation: serverPulse 1s infinite ease-in-out;
+        box-shadow: 0 0 8px rgba(255,77,240,.7);
+        animation: serverDotBlink .7s infinite;
       }
 
-      @keyframes serverPulse {
-        0%, 100% { transform: scale(1); opacity: 1; }
-        50% { transform: scale(1.15); opacity: .7; }
+      @keyframes serverDotBlink {
+        50% {
+          opacity: .3;
+        }
       }
 
       .server-status-text {
-        color: #f5d98d;
-        font-size: 12.5px;
-        line-height: 1.45;
-        font-weight: 500;
+        color: #bda473;
+        font-size: 10.5px;
+        line-height: 1.35;
+        font-weight: 600;
       }
 
       .server-status-text strong {
-        color: #ffd54a;
-        font-weight: 800;
-      }
-
-      .server-option-name {
-        flex: 1;
-        min-width: 0;
-      }
-
-      .server-option-percent {
-        flex: 0 0 auto;
-        margin-left: 12px;
-        color: #ffd43a;
-        font-size: 12px;
+        color: #ffe05b;
         font-weight: 900;
-        letter-spacing: .2px;
-      }
-
-      .server-signal {
-        display: inline-flex;
-        align-items: flex-end;
-        gap: 2px;
-        margin-right: 4px;
-        height: 12px;
-      }
-
-      .server-signal .signal-bar {
-        width: 3px;
-        background: currentColor;
-        border-radius: 1px;
-        opacity: 0.25;
-        transition: 0.2s;
-      }
-
-      .server-signal .signal-bar:nth-child(1) { height: 4px; }
-      .server-signal .signal-bar:nth-child(2) { height: 6px; }
-      .server-signal .signal-bar:nth-child(3) { height: 8px; }
-      .server-signal .signal-bar:nth-child(4) { height: 10px; }
-
-      .server-signal .signal-bar.active {
-        opacity: 1;
       }
     `;
 
     document.head.appendChild(style);
   }
-
-  let isConnecting = false;
-  let activeConnectionToken = 0;
-  var currentPercents = {};
 
   function getSavedServer() {
     try {
@@ -438,508 +592,785 @@
     }
   }
 
-  function setSavedServer(value) {
+  function saveServer(value) {
     try {
       localStorage.setItem(STORAGE_KEY, value);
     } catch (e) {}
   }
 
-  function removeSavedServer() {
+  function removeServer() {
     try {
       localStorage.removeItem(STORAGE_KEY);
     } catch (e) {}
   }
 
-  function getServerLabel(value) {
-    for (var i = 0; i < ALLOWED_SERVERS.length; i++) {
-      if (ALLOWED_SERVERS[i].value === value) return ALLOWED_SERVERS[i].label;
-    }
-    return "";
+  function getServerData(value) {
+    return ALLOWED_SERVERS.find(item => item.value === value) || null;
   }
 
-  function getServerData(value) {
-    for (var i = 0; i < ALLOWED_SERVERS.length; i++) {
-      if (ALLOWED_SERVERS[i].value === value) return ALLOWED_SERVERS[i];
-    }
-    return null;
+  function getServerLabel(value) {
+    const server = getServerData(value);
+    return server ? server.label : "";
   }
 
   function hashString(str) {
-    var hash = 0;
-    for (var i = 0; i < str.length; i++) {
-      hash = ((hash << 5) - hash) + str.charCodeAt(i);
+    let hash = 0;
+
+    for (let i = 0; i < str.length; i++) {
+      hash =
+        ((hash << 5) - hash) +
+        str.charCodeAt(i);
+
       hash |= 0;
     }
+
     return Math.abs(hash);
   }
 
   function seededRandom(seed) {
-    var x = Math.sin(seed) * 10000;
+    const x = Math.sin(seed) * 10000;
     return x - Math.floor(x);
   }
 
   function getDynamicPercent(value) {
-    var server = getServerData(value);
+    const server = getServerData(value);
+
     if (!server) return "0.00%";
 
-    var bucketMs = 5 * 60 * 1000;
-    var now = Date.now();
-    var currentBucket = Math.floor(now / bucketMs);
-    var nextBucket = currentBucket + 1;
+    const bucketMs = 5 * 60 * 1000;
+    const now = Date.now();
 
-    function getBucketValue(bucket) {
-      var seed = hashString(value + "|" + bucket + "|" + BRAND_NAME);
-      var rand = seededRandom(seed);
-      return server.min + rand * (server.max - server.min);
+    const currentBucket =
+      Math.floor(now / bucketMs);
+
+    const nextBucket =
+      currentBucket + 1;
+
+    function bucketValue(bucket) {
+      const seed =
+        hashString(
+          value +
+          "|" +
+          bucket +
+          "|" +
+          BRAND_NAME
+        );
+
+      const rand =
+        seededRandom(seed);
+
+      return (
+        server.min +
+        rand * (server.max - server.min)
+      );
     }
 
-    var startValue = getBucketValue(currentBucket);
-    var endValue = getBucketValue(nextBucket);
-    var progress = (now % bucketMs) / bucketMs;
-    var eased = progress * progress * (3 - 2 * progress);
-    var liveValue = startValue + (endValue - startValue) * eased;
+    const start =
+      bucketValue(currentBucket);
 
-    if (liveValue > server.max) liveValue = server.max;
-    if (liveValue < server.min) liveValue = server.min;
+    const end =
+      bucketValue(nextBucket);
 
-    var result = liveValue.toFixed(2) + "%";
-    currentPercents[value] = result;
+    const progress =
+      (now % bucketMs) / bucketMs;
+
+    const eased =
+      progress *
+      progress *
+      (3 - 2 * progress);
+
+    let valueNow =
+      start +
+      (end - start) *
+      eased;
+
+    valueNow =
+      Math.max(
+        server.min,
+        Math.min(server.max, valueNow)
+      );
+
+    const result =
+      valueNow.toFixed(2) + "%";
+
+    currentPercents[value] =
+      result;
+
     return result;
   }
 
-  function getSignalHtml(percent) {
-    var num = parseFloat(percent);
-    var level = 1;
-
-    if (num > 90) level = 4;
-    else if (num > 75) level = 3;
-    else if (num > 60) level = 2;
-
-    var barsHtml = "";
-    for (var i = 1; i <= 4; i++) {
-      barsHtml += '<span class="signal-bar' + (i <= level ? " active" : "") + '"></span>';
-    }
-
-    return '<span class="server-signal">' + barsHtml + "</span>";
-  }
-
   function getMetaColor(percent) {
-    var num = parseFloat(percent);
-    if (num > 90) return "#00ff88";
-    if (num > 75) return "#ffd43a";
+    const value =
+      parseFloat(percent);
+
+    if (value > 90)
+      return "#00ff88";
+
+    if (value > 75)
+      return "#ffd43a";
+
     return "#ff4d4d";
   }
 
-  function setPendingState(label) {
-    var dot = document.getElementById("serverDot");
-    var statusText = document.getElementById("serverStatusText");
+  function getSignalHtml(percent) {
+    const value =
+      parseFloat(percent);
 
-    if (!dot || !statusText) return;
+    let level = 1;
 
-    dot.classList.remove("active");
-    dot.classList.add("pending");
-    statusText.innerHTML = 'Menghubungkan ke <strong>' + label + '</strong>...';
-  }
+    if (value > 90)
+      level = 4;
+    else if (value > 75)
+      level = 3;
+    else if (value > 60)
+      level = 2;
 
-  function setConnectedState(label) {
-    var dot = document.getElementById("serverDot");
-    var statusText = document.getElementById("serverStatusText");
-    var savedValue = getSavedServer();
-    var customLabel = document.getElementById("serverCustomLabel");
-    var percent = currentPercents[savedValue] || getDynamicPercent(savedValue);
+    let html =
+      '<span class="server-signal">';
 
-    if (!dot || !statusText) return;
-
-    dot.classList.remove("pending");
-    dot.classList.add("active");
-
-    if (customLabel) {
-      customLabel.innerHTML =
-        '<span class="selected-server-name">' + label + '</span>' +
-        '<span class="selected-server-meta" style="color:' + getMetaColor(percent) + ';">' +
-        getSignalHtml(percent) + " " + percent + "</span>";
+    for (let i = 1; i <= 4; i++) {
+      html +=
+        '<span class="signal-bar' +
+        (i <= level ? " active" : "") +
+        '"></span>';
     }
 
-    statusText.innerHTML = 'Terhubung ke <strong>' + label + '</strong>. Selamat bermain di ' + BRAND_NAME + '!';
+    html += "</span>";
+
+    return html;
   }
 
   function setDisconnectedState() {
-    var dot = document.getElementById("serverDot");
-    var statusText = document.getElementById("serverStatusText");
-    var nativeSelect = document.getElementById("serverDropdown");
-    var customLabel = document.getElementById("serverCustomLabel");
-    var customSelect = document.getElementById("serverCustomSelect");
+    const dot =
+      document.getElementById("serverDot");
+
+    const text =
+      document.getElementById("serverStatusText");
+
+    const label =
+      document.getElementById("serverCustomLabel");
 
     if (dot) {
       dot.classList.remove("active");
       dot.classList.remove("pending");
     }
 
-    if (statusText) {
-      statusText.textContent = "Status: Belum terhubung ke server";
+    if (text) {
+      text.textContent =
+        "Status: Belum terhubung ke server";
     }
 
-    if (nativeSelect) {
-      nativeSelect.value = "";
+    if (label) {
+      label.textContent =
+        "Pilih Server";
+    }
+  }
+
+  function setPendingState(label) {
+    const dot =
+      document.getElementById("serverDot");
+
+    const text =
+      document.getElementById("serverStatusText");
+
+    if (dot) {
+      dot.classList.remove("active");
+      dot.classList.add("pending");
+    }
+
+    if (text) {
+      text.innerHTML =
+        "Menghubungkan ke <strong>" +
+        label +
+        "</strong>...";
+    }
+  }
+
+  function setConnectedState(value) {
+    const label =
+      getServerLabel(value);
+
+    const percent =
+      getDynamicPercent(value);
+
+    const dot =
+      document.getElementById("serverDot");
+
+    const text =
+      document.getElementById("serverStatusText");
+
+    const customLabel =
+      document.getElementById("serverCustomLabel");
+
+    if (dot) {
+      dot.classList.remove("pending");
+      dot.classList.add("active");
     }
 
     if (customLabel) {
-      customLabel.textContent = "Pilih Server";
+      customLabel.innerHTML =
+        '<span class="selected-server-name">' +
+        label +
+        '</span>' +
+
+        '<span class="selected-server-meta" style="color:' +
+        getMetaColor(percent) +
+        ';">' +
+
+        getSignalHtml(percent) +
+        " " +
+        percent +
+
+        "</span>";
     }
 
-    if (customSelect) {
-      syncSelectedOption("");
-      customSelect.classList.remove("open");
-    }
-  }
-
-  function syncSelectedOption(value) {
-    var options = document.querySelectorAll(".server-custom-option");
-    for (var i = 0; i < options.length; i++) {
-      options[i].classList.toggle("selected", options[i].getAttribute("data-value") === value);
-    }
-  }
-
-  function updateUIState() {
-    if (isConnecting) return;
-
-    var savedValue = getSavedServer();
-    var savedLabel = getServerLabel(savedValue);
-    var nativeSelect = document.getElementById("serverDropdown");
-    var customLabel = document.getElementById("serverCustomLabel");
-
-    if (nativeSelect) nativeSelect.value = savedValue || "";
-
-    if (customLabel && !savedValue) {
-      customLabel.textContent = "Pilih Server";
-    }
-
-    syncSelectedOption(savedValue || "");
-
-    if (savedValue && savedLabel) {
-      setConnectedState(savedLabel);
-    } else {
-      setDisconnectedState();
+    if (text) {
+      text.innerHTML =
+        'Terhubung ke <strong>' +
+        label +
+        "</strong>. Jalur server aktif.";
     }
   }
 
-  function clearTerminal() {
-    var terminalWrap = document.getElementById("serverTerminalInline");
-    var terminalBox = document.getElementById("serverTerminalInlineBox");
+  function showTerminalSequence(lines, done, token) {
+    const wrap =
+      document.getElementById(
+        "serverTerminalInline"
+      );
 
-    if (terminalWrap) terminalWrap.classList.remove("show");
-    if (terminalBox) terminalBox.innerHTML = "";
-  }
+    const box =
+      document.getElementById(
+        "serverTerminalInlineBox"
+      );
 
-  function refreshConnectedStatusPercent() {
-    var savedValue = getSavedServer();
-    var savedLabel = getServerLabel(savedValue);
-    var dot = document.getElementById("serverDot");
-
-    if (!savedValue || !savedLabel || !dot) return;
-    if (!dot.classList.contains("active")) return;
-
-    setConnectedState(savedLabel);
-  }
-
-  function showTerminalSequence(lines, onComplete, token) {
-    var terminalWrap = document.getElementById("serverTerminalInline");
-    var terminalBox = document.getElementById("serverTerminalInlineBox");
-
-    if (!terminalWrap || !terminalBox) {
-      if (typeof onComplete === "function") onComplete();
+    if (!wrap || !box) {
+      if (done) done();
       return;
     }
 
-    terminalBox.innerHTML = "";
-    terminalWrap.classList.add("show");
+    wrap.classList.add("show");
+    box.innerHTML = "";
 
-    var lineIndex = 0;
+    let index = 0;
 
-    function typeLine(text, done) {
-      if (token !== activeConnectionToken) return;
+    function nextLine() {
+      if (token !== connectionToken)
+        return;
 
-      var i = 0;
-      var line = document.createElement("div");
-      terminalBox.appendChild(line);
+      if (index >= lines.length) {
+        setTimeout(function () {
+          wrap.classList.remove("show");
+          box.innerHTML = "";
 
-      function tick() {
-        if (token !== activeConnectionToken) return;
+          if (done)
+            done();
+        }, 450);
 
-        if (i < text.length) {
-          line.textContent += text.charAt(i++);
-          setTimeout(tick, 14);
+        return;
+      }
+
+      const line =
+        document.createElement("div");
+
+      box.appendChild(line);
+
+      const text =
+        lines[index++];
+
+      let charIndex = 0;
+
+      function type() {
+        if (token !== connectionToken)
+          return;
+
+        if (charIndex < text.length) {
+          line.textContent +=
+            text.charAt(charIndex++);
+
+          setTimeout(type, 12);
         } else {
-          setTimeout(done, 170);
+          setTimeout(nextLine, 120);
         }
       }
 
-      tick();
+      type();
     }
 
-    function next() {
-      if (token !== activeConnectionToken) return;
-
-      if (lineIndex < lines.length) {
-        typeLine(lines[lineIndex++], next);
-      } else {
-        setTimeout(function () {
-          if (token !== activeConnectionToken) return;
-          terminalWrap.classList.remove("show");
-          terminalBox.innerHTML = "";
-          if (typeof onComplete === "function") onComplete();
-        }, 700);
-      }
-    }
-
-    next();
+    nextLine();
   }
 
   function applyServerSelection(value) {
-    var currentSavedValue = getSavedServer();
-    var nativeSelect = document.getElementById("serverDropdown");
-    var customLabel = document.getElementById("serverCustomLabel");
-    var customSelect = document.getElementById("serverCustomSelect");
-    var label = getServerLabel(value);
+    const menu =
+      document.getElementById(
+        "serverCustomSelect"
+      );
 
-    if (value && currentSavedValue === value && !isConnecting) {
-      if (nativeSelect) nativeSelect.value = value;
-      syncSelectedOption(value);
-      if (customSelect) customSelect.classList.remove("open");
-      setConnectedState(label);
+    const label =
+      getServerLabel(value);
+
+    connectionToken++;
+
+    if (menu)
+      menu.classList.remove("open");
+
+    if (!value || !label) {
+      removeServer();
+      isConnecting = false;
+      setDisconnectedState();
       return;
     }
 
-    activeConnectionToken++;
+    isConnecting = true;
 
-    if (nativeSelect) nativeSelect.value = value;
+    setPendingState(label);
 
-    if (customLabel) {
-      customLabel.innerHTML = '<span class="selected-server-name">' + (label || "Pilih Server") + '</span>';
-    }
+    const token =
+      connectionToken;
 
-    syncSelectedOption(value);
+    showTerminalSequence(
+      [
+        "> Memilih " + label,
+        "> Memeriksa gateway...",
+        "> Menguji respon jaringan...",
+        "> Membuka jalur server...",
+        "> Sinkronisasi sesi...",
+        "> Koneksi berhasil"
+      ],
+      function () {
+        if (token !== connectionToken)
+          return;
 
-    if (customSelect) {
-      customSelect.classList.remove("open");
-    }
+        saveServer(value);
 
-    if (value && label) {
-      isConnecting = true;
-      setPendingState(label);
-
-      var currentToken = activeConnectionToken;
-
-      showTerminalSequence([
-        "> Menginisialisasi: " + label,
-        "> Memvalidasi koneksi server...",
-        "> Respon gateway diterima",
-        "> Membuka jalur koneksi aman...",
-        "> Menyinkronkan data sesi...",
-        "> Koneksi BERHASIL — Selamat datang di " + BRAND_NAME
-      ], function () {
-        if (currentToken !== activeConnectionToken) return;
-        setSavedServer(value);
         isConnecting = false;
-        setConnectedState(label);
-      }, currentToken);
-    } else {
-      isConnecting = false;
-      removeSavedServer();
-      clearTerminal();
-      setDisconnectedState();
-    }
+
+        setConnectedState(value);
+
+        syncSelectedOption(value);
+      },
+      token
+    );
+  }
+
+  function syncSelectedOption(value) {
+    document
+      .querySelectorAll(".server-custom-option")
+      .forEach(function (option) {
+        option.classList.toggle(
+          "selected",
+          option.dataset.value === value
+        );
+      });
   }
 
   function createUI() {
-    var existing = document.getElementById("server-selector-ui");
-    if (existing) return existing;
+    if (
+      document.getElementById(
+        "server-selector-ui"
+      )
+    ) {
+      return null;
+    }
 
-    var savedValue = getSavedServer();
-    var savedLabel = getServerLabel(savedValue);
-    var connected = !!savedValue && !!savedLabel;
+    const savedValue =
+      getSavedServer();
 
-    var wrap = document.createElement("div");
-    wrap.className = "server-selector-ui";
-    wrap.id = "server-selector-ui";
+    const savedLabel =
+      getServerLabel(savedValue);
+
+    const connected =
+      !!savedValue &&
+      !!savedLabel;
+
+    const wrap =
+      document.createElement("div");
+
+    wrap.className =
+      "server-selector-ui";
+
+    wrap.id =
+      "server-selector-ui";
 
     wrap.innerHTML = `
-      <div class="server-selector-head">
-        <div>
-          <div class="server-selector-title">Server Gacor</div>
-          <div class="server-selector-sub">Pilih Server Gacor yang Tersedia</div>
-        </div>
-        <div class="server-selector-badge">${BRAND_NAME}</div>
-      </div>
+      <div class="server-panel">
 
-      <div class="server-selector-field">
-        <select class="server-native-select" id="serverDropdown" aria-hidden="true" tabindex="-1">
-          <option value="">Pilih Server</option>
-          ${ALLOWED_SERVERS.map(function (item) {
-            return '<option value="' + item.value + '"' + (item.value === savedValue ? " selected" : "") + '>' + item.label + '</option>';
-          }).join("")}
+        <div class="server-header">
+
+          <div class="server-heading">
+
+            <div class="server-mini-title">
+              BAJAI88 CONNECTION SYSTEM
+            </div>
+
+            <div class="server-main-title">
+              SERVER GACOR
+            </div>
+
+            <div class="server-description">
+              Pilih jalur server terbaik
+            </div>
+
+          </div>
+
+          <div class="server-brand">
+            ${BRAND_NAME}
+          </div>
+
+        </div>
+
+        <div class="server-line"></div>
+
+        <div class="server-field-title">
+
+          <span>
+            SERVER GATEWAY
+          </span>
+
+          <span class="server-live">
+            LIVE
+          </span>
+
+        </div>
+
+        <select
+          class="server-native-select"
+          id="serverDropdown"
+        >
+          <option value="">
+            Pilih Server
+          </option>
+
+          ${ALLOWED_SERVERS.map(
+            item =>
+              `<option value="${item.value}">
+                ${item.label}
+              </option>`
+          ).join("")}
+
         </select>
 
-        <div class="server-custom-select" id="serverCustomSelect">
-          <div class="server-custom-trigger" id="serverCustomTrigger" tabindex="0" role="button" aria-haspopup="listbox" aria-expanded="false">
-            <span class="server-custom-label" id="serverCustomLabel">${
-              savedLabel
-                ? '<span class="selected-server-name">' + savedLabel + '</span>' +
-                  '<span class="selected-server-meta" style="color:' + getMetaColor(getDynamicPercent(savedValue)) + ';">' +
-                  getSignalHtml(getDynamicPercent(savedValue)) + " " + getDynamicPercent(savedValue) + "</span>"
-                : "Pilih Server"
-            }</span>
-            <span class="server-selector-arrow"></span>
+        <div
+          class="server-custom-select"
+          id="serverCustomSelect"
+        >
+
+          <div
+            class="server-custom-trigger"
+            id="serverCustomTrigger"
+          >
+
+            <span
+              class="server-custom-label"
+              id="serverCustomLabel"
+            >
+
+              ${
+                connected
+                  ? `
+                    <span class="selected-server-name">
+                      ${savedLabel}
+                    </span>
+                  `
+                  : "Pilih Server"
+              }
+
+            </span>
+
+            <span
+              class="server-selector-arrow"
+            ></span>
+
           </div>
 
-          <div class="server-custom-menu" id="serverCustomMenu" role="listbox">
-            <div class="server-custom-option ${savedValue === "" ? "selected" : ""}" data-value="">List Server</div>
+          <div
+            class="server-custom-menu"
+            id="serverCustomMenu"
+          >
+
+            <div
+              class="server-custom-option"
+              data-value=""
+            >
+              <span class="server-option-name">
+                Pilih Server
+              </span>
+            </div>
+
             ${ALLOWED_SERVERS.map(function (item) {
-              var percent = getDynamicPercent(item.value);
-              return '<div class="server-custom-option ' + (item.value === savedValue ? "selected" : "") + '" data-value="' + item.value + '">' +
-                '<span class="server-option-name">' + item.label + '</span>' +
-                '<span class="server-option-percent" style="color:' + getMetaColor(percent) + ';" data-percent-for="' + item.value + '">' +
-                getSignalHtml(percent) + " " + percent +
-                '</span>' +
-                '</div>';
+
+              const percent =
+                getDynamicPercent(item.value);
+
+              return `
+                <div
+                  class="server-custom-option"
+                  data-value="${item.value}"
+                >
+
+                  <span class="server-option-name">
+                    ${item.label}
+                  </span>
+
+                  <span
+                    class="server-option-percent"
+                    data-percent-for="${item.value}"
+                    style="color:${getMetaColor(percent)}"
+                  >
+                    ${getSignalHtml(percent)}
+                    ${percent}
+                  </span>
+
+                </div>
+              `;
             }).join("")}
+
           </div>
-        </div>
-      </div>
 
-      <div class="server-terminal-inline" id="serverTerminalInline">
-        <div class="server-terminal-inline-box" id="serverTerminalInlineBox"></div>
-      </div>
-
-      <div class="server-status">
-        <span class="server-dot ${connected ? "active" : ""}" id="serverDot"></span>
-        <div class="server-status-text" id="serverStatusText">
-          ${connected
-            ? 'Terhubung ke <strong>' + savedLabel + '</strong>. Selamat bermain di ' + BRAND_NAME + '!'
-            : 'Status: Belum terhubung ke server'}
         </div>
+
+        <div
+          class="server-terminal-inline"
+          id="serverTerminalInline"
+        >
+          <div
+            class="server-terminal-inline-box"
+            id="serverTerminalInlineBox"
+          ></div>
+        </div>
+
+        <div class="server-status">
+
+          <span
+            class="server-dot ${
+              connected
+                ? "active"
+                : ""
+            }"
+            id="serverDot"
+          ></span>
+
+          <div
+            class="server-status-text"
+            id="serverStatusText"
+          >
+            ${
+              connected
+                ? `Terhubung ke <strong>${savedLabel}</strong>. Jalur server aktif.`
+                : "Status: Belum terhubung ke server"
+            }
+          </div>
+
+        </div>
+
       </div>
     `;
 
-    var customSelect = wrap.querySelector("#serverCustomSelect");
-    var trigger = wrap.querySelector("#serverCustomTrigger");
-    var options = wrap.querySelectorAll(".server-custom-option");
+    const trigger =
+      wrap.querySelector(
+        "#serverCustomTrigger"
+      );
 
-    function closeMenu() {
-      customSelect.classList.remove("open");
-      trigger.setAttribute("aria-expanded", "false");
-    }
+    const customSelect =
+      wrap.querySelector(
+        "#serverCustomSelect"
+      );
 
-    function openMenu() {
-      customSelect.classList.add("open");
-      trigger.setAttribute("aria-expanded", "true");
-    }
-
-    trigger.addEventListener("click", function (e) {
-      e.stopPropagation();
-      customSelect.classList.contains("open") ? closeMenu() : openMenu();
-    });
-
-    trigger.addEventListener("keydown", function (e) {
-      if (e.key === "Enter" || e.key === " ") {
-        e.preventDefault();
-        customSelect.classList.contains("open") ? closeMenu() : openMenu();
-      } else if (e.key === "Escape") {
-        closeMenu();
-      }
-    });
-
-    for (var i = 0; i < options.length; i++) {
-      options[i].addEventListener("click", function (e) {
+    trigger.addEventListener(
+      "click",
+      function (e) {
         e.stopPropagation();
-        applyServerSelection(this.getAttribute("data-value"));
-      });
-    }
 
-    document.addEventListener("click", function (e) {
-      if (!wrap.contains(e.target)) closeMenu();
-    });
+        customSelect.classList.toggle(
+          "open"
+        );
+      }
+    );
+
+    wrap
+      .querySelectorAll(
+        ".server-custom-option"
+      )
+      .forEach(function (option) {
+
+        option.addEventListener(
+          "click",
+          function (e) {
+            e.stopPropagation();
+
+            applyServerSelection(
+              this.dataset.value || ""
+            );
+          }
+        );
+      });
+
+    document.addEventListener(
+      "click",
+      function (e) {
+
+        if (!wrap.contains(e.target)) {
+          customSelect.classList.remove(
+            "open"
+          );
+        }
+      }
+    );
+
+    if (connected) {
+      setTimeout(function () {
+        setConnectedState(savedValue);
+        syncSelectedOption(savedValue);
+      }, 0);
+    }
 
     return wrap;
   }
 
-  function startRandomUpdates() {
-    var percentEls = document.querySelectorAll("[data-percent-for]");
+  function startPercentUpdates() {
+    function update() {
+      document
+        .querySelectorAll(
+          "[data-percent-for]"
+        )
+        .forEach(function (el) {
 
-    for (var i = 0; i < percentEls.length; i++) {
-      (function (el) {
-        function updateOne() {
-          var value = el.getAttribute("data-percent-for");
-          var percent = getDynamicPercent(value);
+          const value =
+            el.dataset.percentFor;
 
-          el.innerHTML = getSignalHtml(percent) + " " + percent;
-          el.style.color = getMetaColor(percent);
+          const percent =
+            getDynamicPercent(value);
 
-          if (value === getSavedServer()) {
-            refreshConnectedStatusPercent();
-          }
+          el.style.color =
+            getMetaColor(percent);
 
-          var delay = Math.random() * 3000 + 1000;
-          setTimeout(updateOne, delay);
-        }
+          el.innerHTML =
+            getSignalHtml(percent) +
+            " " +
+            percent;
+        });
 
-        updateOne();
-      })(percentEls[i]);
+      const saved =
+        getSavedServer();
+
+      if (
+        saved &&
+        !isConnecting
+      ) {
+        setConnectedState(saved);
+      }
+
+      setTimeout(
+        update,
+        3000 + Math.random() * 2000
+      );
     }
+
+    update();
+  }
+
+  function findTarget() {
+    for (
+      const selector
+      of TARGET_SELECTORS
+    ) {
+      const target =
+        document.querySelector(selector);
+
+      if (target)
+        return target;
+    }
+
+    return null;
   }
 
   function init() {
-    if (window.innerWidth > MOBILE_BREAKPOINT) return;
-    if (!document.querySelector(".jackpot")) return;
+    if (
+      window.innerWidth >
+      MOBILE_BREAKPOINT
+    ) {
+      return;
+    }
 
     let attempts = 0;
-    const interval = setInterval(() => {
-      attempts++;
 
-      let target = null;
+    const interval =
+      setInterval(function () {
 
-      for (const sel of TARGET_SELECTORS) {
-        target = document.querySelector(sel);
-        if (target) break;
-      }
+        attempts++;
 
-      if (target) {
-        injectStyle();
+        const target =
+          findTarget();
 
-        const ui = createUI();
+        if (target) {
+          injectStyle();
 
-        if (ui && !ui.parentNode) {
-          if (typeof createApkBox === "function") {
-            const apkBox = createApkBox();
+          const ui =
+            createUI();
 
-            if (apkBox && !apkBox.parentNode) {
-              target.insertAdjacentElement("beforebegin", apkBox);
-              apkBox.insertAdjacentElement("afterend", ui);
+          if (ui) {
+
+            if (
+              typeof createApkBox ===
+              "function"
+            ) {
+
+              const apkBox =
+                createApkBox();
+
+              if (
+                apkBox &&
+                !apkBox.parentNode
+              ) {
+
+                target.insertAdjacentElement(
+                  "beforebegin",
+                  apkBox
+                );
+
+                apkBox.insertAdjacentElement(
+                  "afterend",
+                  ui
+                );
+
+              } else {
+
+                target.insertAdjacentElement(
+                  "afterend",
+                  ui
+                );
+              }
+
             } else {
-              target.insertAdjacentElement(INSERT_POSITION, ui);
+
+              target.insertAdjacentElement(
+                "afterend",
+                ui
+              );
             }
-          } else {
-            target.insertAdjacentElement(INSERT_POSITION, ui);
+
+            startPercentUpdates();
           }
 
-          updateUIState();
-          startRandomUpdates();
+          clearInterval(interval);
         }
 
-        clearInterval(interval);
-      }
+        if (attempts >= 40) {
+          clearInterval(interval);
+        }
 
-      if (attempts >= 40) {
-        clearInterval(interval);
-      }
-    }, 500);
-
-    window.addEventListener("storage", updateUIState);
+      }, 500);
   }
 
-  if (document.readyState === "loading") {
-    document.addEventListener("DOMContentLoaded", init);
+  if (
+    document.readyState ===
+    "loading"
+  ) {
+    document.addEventListener(
+      "DOMContentLoaded",
+      init
+    );
   } else {
     init();
   }
+
 })();
