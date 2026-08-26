@@ -486,8 +486,7 @@ body.mobile {
   background-size: cover !important;
 }
 
-body.mobile .top-bar .inner-header,
-.nav-content {
+body.mobile .top-bar .inner-header {
    background:
     conic-gradient(
       from 45deg at 50% 50%,
@@ -497,7 +496,18 @@ body.mobile .top-bar .inner-header,
       #222324 75% 100%
     ) 0 0 / 28px 24px repeat !important;
   border-bottom: 2px solid #ffd400 !important;
-  opacity: 100%;
+}
+
+.nav-content {
+   background:
+    conic-gradient(
+      from 45deg at 50% 50%,
+      #121314 0 25%,
+      #0d0e0f 25% 50%,
+      #191a1b 50% 75%,
+      #222324 75% 100%
+    ) 0 0 / 28px 24px repeat !important;
+  border-right: 2px solid #ffd400 !important;
 }
 
 body.mobile .scroll-wrapper[_home] .slider-content {
