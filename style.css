@@ -981,10 +981,10 @@ input.btn-primary::before {
   align-items: center;
   justify-content: center;
   background: linear-gradient(#3b0e1d, #1d0622, #3b0e1d) !important;
-  border: 2px solid #ffffff;
+  border: 2px solid #ffd400;
   border-radius: 50%;
   font-size: 18px;
-  color: #ffffff !important;
+  color: #ffd400 !important;
 }
 
 .menu-bottom .footericon-single a.footer-funds div {
