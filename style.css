@@ -499,7 +499,14 @@ body.mobile .top-bar .inner-header {
 }
 
 .nav-content {
-  background: linear-gradient(90deg, #3b0e1d, #1d0622, #3b0e1d) !important;
+   background:
+    conic-gradient(
+      from 45deg at 50% 50%,
+      #121314 0 25%,
+      #0d0e0f 25% 50%,
+      #191a1b 50% 75%,
+      #222324 75% 100%
+    ) 0 0 / 28px 24px repeat !important;
   border-right: 2px solid #ffd400 !important;
 }
 
