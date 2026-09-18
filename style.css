@@ -884,6 +884,9 @@ input.btn-primary::before {
   color: #000 !important;
 }
 
+.form-control {
+   background-color: #000000b0 !important;
+}
 
 /* =========================
    PROMOTION TABS
